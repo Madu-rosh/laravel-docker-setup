@@ -1,0 +1,41 @@
+version: '3.5'
+
+services:
+    laravel-app:
+        build:
+          context: '.'
+        container_name: app
+        depends_on:
+          - mariadb
+        volumes:
+          - ./:/var/www/html
+        working_dir: /var/www/html
+        stdin_open: true
+        tty: true                
+        ports:
+          - 80:80
+        networks:
+          backend:
+            aliases:
+              - app
+
+    mariadb:
+        image: mariadb:10.2.26
+        container_name: app-db
+        volumes:
+          - ./run/var:/var/lib/mysql
+        environment:
+          - MYSQL_ROOT_PASSWORD=securerootpassword
+          - MYSQL_DATABASE=${DB_DATABASE}
+          - MYSQL_USER=${DB_USERNAME}
+          - MYSQL_PASSWORD=${DB_PASSWORD}
+        ports:
+          - 3309:3306
+        networks:
+          backend:
+            aliases:
+              - db
+
+networks:
+  backend:
+    name: backend-network
